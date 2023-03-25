@@ -1,5 +1,21 @@
 .PHONY: lint
 
+run:
+	go run . -dbname sample -password example
+
+test:
+	go test ./...
+
+db-start:
+	docker-compose up -d testdb
+
+db-init:
+	docker-compose down -v
+	docker-compose up -d testdb
+
+db-shell:
+	docker-compose exec testdb mysql -u root -pexample sample
+
 lint:
 	docker run --rm -t \
 		-v $$(pwd):/app \
