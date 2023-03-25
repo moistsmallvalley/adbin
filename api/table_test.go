@@ -19,7 +19,7 @@ const (
 	testDBName = "apitest"
 )
 
-func TestHandlerServeHTTP(t *testing.T) {
+func TestTableHandlerServeHTTP(t *testing.T) {
 	db, err := testdb.InitTestDB(testDBUser, testDBPass, testDBName,
 		`
 CREATE TABLE users (
@@ -37,7 +37,7 @@ CREATE TABLE users (
 	tables, err := table.ListDBTables(db)
 	require.NoError(t, err)
 
-	h := NewHandler(tables, db)
+	h := NewTableHandler(tables, db)
 	w := httptest.NewRecorder()
 	r := httptest.NewRequest(http.MethodGet, "/users", nil)
 	h.ServeHTTP(w, r)
@@ -45,17 +45,21 @@ CREATE TABLE users (
 	body, err := io.ReadAll(w.Body)
 	require.NoError(t, err)
 
+	assert.Equal(t, http.StatusOK, w.Result().StatusCode)
 	assert.JSONEq(t, `
-[
-	{
-		"id": 1,
-		"username": "testuser",
-		"age": 23
-	},
-	{
-		"id": 2,
-		"username": "otheruser",
-		"age": null
-	}
-]`, string(body))
+{
+	"columns": ["id", "username", "age"],
+	"rows": [
+		{
+			"id": 1,
+			"username": "testuser",
+			"age": 23
+		},
+		{
+			"id": 2,
+			"username": "otheruser",
+			"age": null
+		}
+	]
+}`, string(body))
 }

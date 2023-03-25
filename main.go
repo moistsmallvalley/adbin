@@ -9,6 +9,7 @@ import (
 
 	"github.com/moistsmallvalley/adbin/api"
 	"github.com/moistsmallvalley/adbin/log"
+	"github.com/moistsmallvalley/adbin/middleware"
 	"github.com/moistsmallvalley/adbin/table"
 	"github.com/pkg/errors"
 
@@ -33,8 +34,13 @@ func main() {
 	}
 
 	mux := http.NewServeMux()
-	mux.Handle("/api/", http.StripPrefix("/api", api.NewHandler(tables, db)))
-	if err := http.ListenAndServe(":8080", mux); err != nil {
+	mux.Handle("/api/tables", http.StripPrefix("/api/tables", api.NewTableListHandler(tables)))
+	mux.Handle("/api/tables/", http.StripPrefix("/api/tables", api.NewTableHandler(tables, db)))
+
+	handler := middleware.NewCORSMiddleware(mux, "http://localhost:5173", "*")
+
+	log.Info("starting server")
+	if err := http.ListenAndServe(":8080", handler); err != nil {
 		log.Info(err.Error())
 	}
 }

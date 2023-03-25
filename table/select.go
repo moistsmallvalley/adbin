@@ -35,8 +35,8 @@ func Select(db *sql.DB, table Table) ([]Row, error) {
 	return ScanRows(table, rows)
 }
 
-func ScanRows(table Table, rows *sql.Rows) ([]map[string]any, error) {
-	var objs []map[string]any
+func ScanRows(table Table, rows *sql.Rows) ([]Row, error) {
+	var objs []Row
 	for rows.Next() {
 		fields, err := allocFields(table)
 		if err != nil {

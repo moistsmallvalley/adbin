@@ -42,7 +42,7 @@ CREATE TABLE users (
 	rows, err := Select(db, table)
 	require.NoError(t, err)
 
-	assert.Equal(t, []map[string]any{
+	assert.Equal(t, []Row{
 		{
 			"id":       int32(1),
 			"username": "testuser",
