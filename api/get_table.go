@@ -2,47 +2,34 @@ package api
 
 import (
 	"database/sql"
-	"fmt"
 	"net/http"
-	"strings"
 
 	"github.com/moistsmallvalley/adbin/table"
 )
 
-type TableResponse struct {
+type GetTableResponse struct {
 	Columns []string    `json:"columns"`
 	Rows    []table.Row `json:"rows"`
 }
 
-type tableHandler struct {
+type getTableHandler struct {
 	tables map[string]table.Table
 	db     *sql.DB
 }
 
-func NewTableHandler(tables []table.Table, db *sql.DB) http.Handler {
+func NewGetTableHandler(tables []table.Table, db *sql.DB) http.Handler {
 	m := map[string]table.Table{}
 	for _, t := range tables {
 		m[t.Name] = t
 	}
-	return &tableHandler{
+	return &getTableHandler{
 		tables: m,
 		db:     db,
 	}
 }
 
-func (h *tableHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	if r.Method != http.MethodGet {
-		writeNotFound(w)
-		return
-	}
-
-	sp := strings.Split(r.URL.Path, "/")
-	if len(sp) < 2 {
-		writeBadRequest(w, fmt.Sprintf("invalid path: %s", r.URL.Path))
-		return
-	}
-
-	name := sp[1]
+func (h *getTableHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	name := urlParam(r, "name")
 	tbl, ok := h.tables[name]
 	if !ok {
 		writeNotFound(w)
@@ -63,7 +50,7 @@ func (h *tableHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		columns = append(columns, c.Name)
 	}
 
-	writeOK(w, TableResponse{
+	writeOK(w, GetTableResponse{
 		Columns: columns,
 		Rows:    rows,
 	})

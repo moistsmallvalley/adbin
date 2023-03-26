@@ -7,9 +7,10 @@ import (
 	"strconv"
 	"time"
 
+	"github.com/go-chi/chi/v5"
+	"github.com/go-chi/chi/v5/middleware"
 	"github.com/moistsmallvalley/adbin/api"
 	"github.com/moistsmallvalley/adbin/log"
-	"github.com/moistsmallvalley/adbin/middleware"
 	"github.com/moistsmallvalley/adbin/table"
 	"github.com/pkg/errors"
 
@@ -33,14 +34,16 @@ func main() {
 		log.Fatal(err.Error())
 	}
 
-	mux := http.NewServeMux()
-	mux.Handle("/api/tables", http.StripPrefix("/api/tables", api.NewTableListHandler(tables)))
-	mux.Handle("/api/tables/", http.StripPrefix("/api/tables", api.NewTableHandler(tables, db)))
+	r := chi.NewRouter()
+	r.Use(middleware.Logger)
+	r.Use(middleware.SetHeader("Access-Control-Allow-Origin", "http://localhost:5173"))
+	r.Use(middleware.SetHeader("Access-Control-Allow-Method", "*"))
 
-	handler := middleware.NewCORSMiddleware(mux, "http://localhost:5173", "*")
+	r.Get("/api/tables", api.NewGetTablesHandler(tables).ServeHTTP)
+	r.Get("/api/tables/{name}", api.NewGetTableHandler(tables, db).ServeHTTP)
 
 	log.Info("starting server")
-	if err := http.ListenAndServe(":8080", handler); err != nil {
+	if err := http.ListenAndServe(":8080", r); err != nil {
 		log.Info(err.Error())
 	}
 }

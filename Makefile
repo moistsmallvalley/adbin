@@ -1,4 +1,4 @@
-.PHONY: lint
+.PHONY: run test db-start db-init db-shell lint linters
 
 run:
 	go run . -dbname sample -password example

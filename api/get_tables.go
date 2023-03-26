@@ -6,17 +6,17 @@ import (
 	"github.com/moistsmallvalley/adbin/table"
 )
 
-type tableListHandler struct {
+type getTablesHandler struct {
 	tables []table.Table
 }
 
-func NewTableListHandler(tables []table.Table) http.Handler {
-	return &tableListHandler{
+func NewGetTablesHandler(tables []table.Table) http.Handler {
+	return &getTablesHandler{
 		tables: tables,
 	}
 }
 
-func (h *tableListHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+func (h *getTablesHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodGet {
 		writeNotFound(w)
 		return

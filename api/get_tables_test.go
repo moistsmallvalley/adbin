@@ -12,13 +12,13 @@ import (
 	"github.com/moistsmallvalley/adbin/table"
 )
 
-func TestTableListHandler(t *testing.T) {
+func TestGetTablesHandler(t *testing.T) {
 	tables := []table.Table{
 		{Name: "users"},
 		{Name: "messages"},
 	}
 
-	h := NewTableListHandler(tables)
+	h := NewGetTablesHandler(tables)
 	w := httptest.NewRecorder()
 	r := httptest.NewRequest(http.MethodGet, "/", nil)
 	h.ServeHTTP(w, r)
