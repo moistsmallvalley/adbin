@@ -1,7 +1,10 @@
 package table
 
 import (
+	"encoding/base64"
+	"strconv"
 	"strings"
+	"time"
 
 	"github.com/pkg/errors"
 )
@@ -13,10 +16,10 @@ const (
 
 	TypeInteger   = "integer"
 	TypeInt       = "int"
-	TypeSmallint  = "smallint"
+	TypeSmallInt  = "smallint"
 	TypeTinyInt   = "tinyint"
 	TypeMediumInt = "mediumint"
-	TypeBitIng    = "bigint"
+	TypeBigInt    = "bigint"
 	TypeDecimal   = "decimal"
 	TypeNumeric   = "numeric"
 	TypeFloat     = "float"
@@ -44,10 +47,10 @@ const (
 var typeNameToType = map[string]Type{
 	"integer":   TypeInteger,
 	"int":       TypeInt,
-	"smallint":  TypeSmallint,
+	"smallint":  TypeSmallInt,
 	"tinyint":   TypeTinyInt,
 	"mediumint": TypeMediumInt,
-	"bigint":    TypeBitIng,
+	"bigint":    TypeBigInt,
 	"decimal":   TypeDecimal,
 	"numeric":   TypeNumeric,
 	"float":     TypeFloat,
@@ -75,4 +78,45 @@ func makeType(parserTypeName string) (Type, error) {
 		return typ, nil
 	}
 	return TypeUnknown, errors.Errorf("unsupported type '%s'", parserTypeName)
+}
+
+func (t Type) Parse(s string) (any, error) {
+	switch t {
+	case TypeInteger, TypeInt:
+		return strconv.ParseInt(s, 10, 32)
+	case TypeTinyInt:
+		return strconv.ParseInt(s, 10, 8)
+	case TypeSmallInt:
+		return strconv.ParseInt(s, 10, 16)
+	case TypeMediumInt:
+		return strconv.ParseInt(s, 10, 24)
+	case TypeBigInt:
+		return strconv.ParseInt(s, 10, 64)
+	case TypeFloat:
+		return strconv.ParseFloat(s, 32)
+	case TypeDecimal, TypeNumeric, TypeDouble:
+		return strconv.ParseFloat(s, 64)
+	case TypeBit:
+		return strconv.ParseUint(s, 10, 8)
+	case TypeChar, TypeVarChar, TypeText:
+		return s, nil
+	case TypeEnum:
+		return s, nil // TODO: check enum value
+	case TypeDate:
+		return time.Parse("2006-01-02", s)
+	case TypeDateTime:
+		return time.Parse("2006-01-02T15:04:05", s)
+	case TypeTimestamp:
+		return strconv.ParseFloat(s, 64)
+	case TypeTime:
+		return time.Parse("15:04:05", s)
+	case TypeBinary, TypeVarBinary, TypeBlob:
+		return base64.StdEncoding.DecodeString(s)
+	case TypeSet:
+		return nil, errors.New("set columns not supported yet")
+	case TypeJson:
+		return s, nil
+	default:
+		return nil, errors.Errorf("unsupported column type: %s", t)
+	}
 }

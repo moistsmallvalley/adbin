@@ -40,7 +40,7 @@ func main() {
 	r.Use(middleware.SetHeader("Access-Control-Allow-Method", "*"))
 
 	r.Get("/api/tables", api.NewGetTablesHandler(tables).ServeHTTP)
-	r.Get("/api/tables/{name}", api.NewGetTableHandler(tables, db).ServeHTTP)
+	r.Get("/api/tables/{name}", api.NewGetRowsHandler(tables, db).ServeHTTP)
 
 	log.Info("starting server")
 	if err := http.ListenAndServe(":8080", r); err != nil {

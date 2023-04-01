@@ -19,7 +19,7 @@ const (
 	testDBName = "apitest"
 )
 
-func TestGetTableHandlerServeHTTP(t *testing.T) {
+func TestGetRowsHandlerServeHTTP(t *testing.T) {
 	db, err := testdb.InitTestDB(testDBUser, testDBPass, testDBName,
 		`
 CREATE TABLE users (
@@ -37,7 +37,7 @@ CREATE TABLE users (
 	tables, err := table.ListDBTables(db)
 	require.NoError(t, err)
 
-	h := NewGetTableHandler(tables, db)
+	h := NewGetRowsHandler(tables, db)
 	w := httptest.NewRecorder()
 	r := httptest.NewRequest(http.MethodGet, "/", nil)
 	r = withURLParams(r, map[string]string{"name": "users"})

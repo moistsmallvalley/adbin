@@ -1,6 +1,7 @@
 package table
 
 import (
+	"context"
 	"database/sql"
 	"fmt"
 	"time"
@@ -9,9 +10,7 @@ import (
 	"github.com/pkg/errors"
 )
 
-type Row = map[string]any
-
-func SelectStatement(table Table) (query string, args []any) {
+func SelectStatement(table Table, keyCols []Column, keyVals []any) (query string, args []any) {
 	query = "SELECT "
 	for i, col := range table.Columns {
 		if i != 0 {
@@ -20,13 +19,30 @@ func SelectStatement(table Table) (query string, args []any) {
 		query += "`" + col.Name + "`"
 	}
 	query += " FROM " + "`" + table.Name + "`"
-	return query, nil
+	if len(keyCols) > 0 {
+		where, whereArgs := whereClause(keyCols, keyVals)
+		query += " " + where
+		args = append(args, whereArgs...)
+	}
+	return query, args
 }
 
-func Select(db *sql.DB, table Table) ([]Row, error) {
-	query, args := SelectStatement(table)
+func whereClause(keyCols []Column, keyVals []any) (clause string, args []any) {
+	clause = "WHERE "
+	for i, key := range keyCols {
+		if i != 0 {
+			clause += " AND "
+		}
+		clause += "`" + key.Name + "` = ?"
+		args = append(args, keyVals[i])
+	}
+	return clause, args
+}
 
-	rows, err := db.Query(query, args...)
+func Select(ctx context.Context, db *sql.DB, table Table, keyCols []Column, keyVals []any) ([]Row, error) {
+	query, args := SelectStatement(table, keyCols, keyVals)
+
+	rows, err := db.QueryContext(ctx, query, args...)
 	if err != nil {
 		return nil, errors.WithStack(err)
 	}
@@ -61,13 +77,13 @@ func allocFields(table Table) ([]any, error) {
 			switch c.Type {
 			case TypeInteger, TypeInt:
 				fields = append(fields, new(int32))
-			case TypeSmallint:
+			case TypeSmallInt:
 				fields = append(fields, new(int16))
 			case TypeTinyInt:
 				fields = append(fields, new(int8))
 			case TypeMediumInt:
 				fields = append(fields, new(int32))
-			case TypeBitIng:
+			case TypeBigInt:
 				fields = append(fields, new(int64))
 			case TypeDecimal, TypeNumeric:
 				fields = append(fields, new(float64)) // TODO: use fixed floating point value
@@ -100,13 +116,13 @@ func allocFields(table Table) ([]any, error) {
 			switch c.Type {
 			case TypeInteger, TypeInt:
 				fields = append(fields, new(*int32))
-			case TypeSmallint:
+			case TypeSmallInt:
 				fields = append(fields, new(*int16))
 			case TypeTinyInt:
 				fields = append(fields, new(*int8))
 			case TypeMediumInt:
 				fields = append(fields, new(*int32))
-			case TypeBitIng:
+			case TypeBigInt:
 				fields = append(fields, new(*int64))
 			case TypeDecimal, TypeNumeric:
 				fields = append(fields, new(*float64)) // TODO: use fixed floating point value

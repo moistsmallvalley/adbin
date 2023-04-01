@@ -11,6 +11,34 @@ type Table struct {
 	Columns []Column
 }
 
+func (t Table) ColumnByName(name string) (column Column, ok bool) {
+	for _, column = range t.Columns {
+		if column.Name == name {
+			return column, true
+		}
+	}
+	return Column{}, false
+}
+
+func (t Table) PrimaryKeyColumns() []Column {
+	var keys []Column
+	for _, c := range t.Columns {
+		if c.PrimaryKey {
+			keys = append(keys, c)
+		}
+	}
+	return keys
+}
+
+func (t Table) AutoIncrementPrimaryKeyColumn() *Column {
+	for _, c := range t.Columns {
+		if c.PrimaryKey && c.AutoIncrement {
+			return &c
+		}
+	}
+	return nil
+}
+
 type Column struct {
 	Name          string
 	Type          Type
