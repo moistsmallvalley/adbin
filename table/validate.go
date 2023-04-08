@@ -33,13 +33,10 @@ func ValidateRow(table Table, row Row) error {
 				return errors.Errorf("%s is not string", name)
 			}
 		case TypeDate, TypeDateTime, TypeTimestamp, TypeTime:
-			switch value := value.(type) {
-			case string:
-				if _, err := time.Parse(time.RFC3339, value); err != nil {
-					return errors.Errorf("%s is not RFC3339 string", name)
-				}
+			switch value.(type) {
+			case time.Time:
 			default:
-				return errors.Errorf("%s is not RFC3339 string", name)
+				return errors.Errorf("%s is not time", name)
 			}
 		case TypeBinary, TypeVarBinary, TypeBlob:
 			switch value.(type) {

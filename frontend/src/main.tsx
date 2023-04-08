@@ -9,23 +9,14 @@ import App from "./App";
 import { Provider } from "react-redux";
 import { store } from "./store";
 import { TableView } from "./TableView";
-
-const router = createBrowserRouter([
-  {
-    path: "/",
-    element: <App />,
-    children: [
-      {
-        path: ":table",
-        element: <TableView />,
-      },
-    ],
-  },
-]);
+import { RowForm } from "./RowForm";
+import { CssBaseline } from "@mui/material";
+import { router } from "./route";
 
 ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
   <React.StrictMode>
     <Provider store={store}>
+      <CssBaseline />
       <RouterProvider router={router} />
     </Provider>
   </React.StrictMode>

@@ -39,7 +39,14 @@ CREATE TABLE users (
 		require.NoError(t, err)
 
 		assert.Equal(t, http.StatusOK, w.Result().StatusCode)
-		assert.JSONEq(t, `{"id": 1, "username": "testname"}`, string(body))
+		assert.JSONEq(t, `
+{
+	"columns": [
+		{"name": "id", "type": "int", "required": true, "primaryKey": true, "autoIncrement": true},
+		{"name": "username", "type": "varchar", "required": true, "primaryKey": false, "autoIncrement": false}
+	],
+	"row": {"id": 1, "username": "testname"}
+}`, string(body))
 	})
 
 	t.Run("get existing multi key record", func(t *testing.T) {
@@ -69,7 +76,15 @@ CREATE TABLE friendships (
 		require.NoError(t, err)
 
 		assert.Equal(t, http.StatusOK, w.Result().StatusCode)
-		assert.JSONEq(t, `{"user_id": 10, "other_id": 20, "closeness": 100}`, string(body))
+		assert.JSONEq(t, `
+{
+	"columns": [
+		{"name": "user_id", "type": "int", "required": true, "primaryKey": true, "autoIncrement": false},
+		{"name": "other_id", "type": "int", "required": true, "primaryKey": true, "autoIncrement": false},
+		{"name": "closeness", "type": "int", "required": true, "primaryKey": false, "autoIncrement": false}
+	],
+	"row": {"user_id": 10, "other_id": 20, "closeness": 100}
+}`, string(body))
 	})
 
 	t.Run("get not found record", func(t *testing.T) {

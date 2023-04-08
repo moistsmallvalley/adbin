@@ -10,6 +10,7 @@ import TableRowsOutlinedIcon from "@mui/icons-material/TableRowsOutlined";
 import { useGetTablesQuery } from "./services/tables";
 import { NavLink } from "react-router-dom";
 import { Fragment } from "react";
+import { rowsPath } from "./route";
 
 export function Tables() {
   const { data, error, isLoading } = useGetTablesQuery();
@@ -30,7 +31,7 @@ export function Tables() {
         <List>
           {data.map((name) => (
             <ListItem key={name} disablePadding>
-              <ListItemButton component={NavLink} to={`./${name}`}>
+              <ListItemButton component={NavLink} to={rowsPath(name)}>
                 <ListItemIcon>
                   <TableRowsOutlinedIcon />
                 </ListItemIcon>

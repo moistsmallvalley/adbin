@@ -2,6 +2,7 @@ package table
 
 import (
 	"testing"
+	"time"
 
 	"github.com/stretchr/testify/assert"
 )
@@ -43,7 +44,7 @@ func TestValidateRow(t *testing.T) {
 		table := Table{
 			Columns: []Column{{Name: "created_at", Type: TypeDateTime}},
 		}
-		row := Row{"created_at": "2000-01-02T10:20:30Z"}
+		row := Row{"created_at": time.Date(2000, 1, 2, 10, 20, 30, 0, time.UTC)}
 		assert.NoError(t, ValidateRow(table, row))
 	})
 

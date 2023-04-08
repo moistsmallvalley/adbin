@@ -49,7 +49,11 @@ CREATE TABLE users (
 	assert.Equal(t, http.StatusOK, w.Result().StatusCode)
 	assert.JSONEq(t, `
 {
-	"columns": ["id", "username", "age"],
+	"columns": [
+	  {"name": "id", "type": "int", "required": true, "primaryKey": true, "autoIncrement": true },
+	  {"name": "username", "type": "varchar", "required": true, "primaryKey": false, "autoIncrement": false},
+	  {"name": "age", "type": "int", "required": false, "primaryKey": false, "autoIncrement": false}
+	],
 	"rows": [
 		{
 			"id": 1,

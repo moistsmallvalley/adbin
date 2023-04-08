@@ -7,7 +7,10 @@ import (
 	"github.com/moistsmallvalley/adbin/table"
 )
 
-type GetRowResponse table.Row
+type GetRowResponse struct {
+	Columns []ColumnResponse `json:"columns"`
+	Row     table.Row        `json:"row"`
+}
 
 type getRowHandler struct {
 	tables map[string]table.Table
@@ -46,5 +49,13 @@ func (h *getRowHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	writeOK(w, rows[0])
+	var columns []ColumnResponse
+	for _, c := range tbl.Columns {
+		columns = append(columns, toColumnResponse(c))
+	}
+
+	writeOK(w, GetRowResponse{
+		Columns: columns,
+		Row:     rows[0],
+	})
 }

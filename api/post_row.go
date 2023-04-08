@@ -36,6 +36,12 @@ func (h *postRowHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	row, err := row.ParseTimes(tbl)
+	if err != nil {
+		writeBadRequest(w, err.Error())
+		return
+	}
+
 	if err := table.ValidateRow(tbl, row); err != nil {
 		writeBadRequest(w, err.Error())
 		return

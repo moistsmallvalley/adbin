@@ -1,21 +1,25 @@
-.PHONY: run test db-start db-init db-shell lint linters
-
+.PHONY: run
 run:
 	go run . -dbname sample -password example
 
+.PHONY: test
 test:
 	go test ./...
 
-db-start:
+.PHONY: db/start
+db/start:
 	docker-compose up -d testdb
 
-db-init:
+.PHONY: db/init
+db/init:
 	docker-compose down -v
 	docker-compose up -d testdb
 
-db-shell:
+.PHONY: db/shell
+db/shell:
 	docker-compose exec testdb mysql -u root -pexample sample
 
+.PHONY: lint
 lint:
 	docker run --rm -t \
 		-v $$(pwd):/app \
@@ -24,6 +28,7 @@ lint:
 		golangci/golangci-lint:v1.52.1 \
 		golangci-lint run -v
 
+.PHONY: linters
 linters:
 	docker run --rm -t \
 		golangci/golangci-lint:v1.52.1 \

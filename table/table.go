@@ -47,6 +47,10 @@ type Column struct {
 	AutoIncrement bool
 }
 
+func (c Column) IsTime() bool {
+	return c.Type == TypeTime || c.Type == TypeDate || c.Type == TypeDateTime || c.Type == TypeTimestamp
+}
+
 func Parse(ddl string) ([]Table, error) {
 	var tables []Table
 	for {

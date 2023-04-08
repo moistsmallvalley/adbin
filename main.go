@@ -9,6 +9,7 @@ import (
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
+	"github.com/go-chi/cors"
 	"github.com/moistsmallvalley/adbin/api"
 	"github.com/moistsmallvalley/adbin/log"
 	"github.com/moistsmallvalley/adbin/table"
@@ -36,11 +37,20 @@ func main() {
 
 	r := chi.NewRouter()
 	r.Use(middleware.Logger)
-	r.Use(middleware.SetHeader("Access-Control-Allow-Origin", "http://localhost:5173"))
-	r.Use(middleware.SetHeader("Access-Control-Allow-Method", "*"))
+	r.Use(cors.Handler(cors.Options{
+		AllowedOrigins:   []string{"http://localhost:5173"},
+		AllowedMethods:   []string{"GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"},
+		AllowedHeaders:   []string{"Accept", "Authorization", "Content-Type", "X-CSRF-Token"},
+		AllowCredentials: false,
+		MaxAge:           300, // Maximum value not ignored by any of major browsers
+	}))
 
 	r.Get("/api/tables", api.NewGetTablesHandler(tables).ServeHTTP)
-	r.Get("/api/tables/{name}", api.NewGetRowsHandler(tables, db).ServeHTTP)
+	r.Get("/api/tables/{name}", api.NewGetTableHandler(tables).ServeHTTP)
+	r.Get("/api/tables/{name}/rows", api.NewGetRowsHandler(tables, db).ServeHTTP)
+	r.Get("/api/tables/{name}/rows/{keyPath}", api.NewGetRowHandler(tables, db).ServeHTTP)
+	r.Patch("/api/tables/{name}/rows/{keyPath}", api.NewPatchRowHandler(tables, db).ServeHTTP)
+	r.Post("/api/tables/{name}/rows", api.NewPostRowHandler(tables, db).ServeHTTP)
 
 	log.Info("starting server")
 	if err := http.ListenAndServe(":8080", r); err != nil {

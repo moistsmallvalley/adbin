@@ -8,8 +8,26 @@ import (
 )
 
 type GetRowsResponse struct {
-	Columns []string    `json:"columns"`
-	Rows    []table.Row `json:"rows"`
+	Columns []ColumnResponse `json:"columns"`
+	Rows    []table.Row      `json:"rows"`
+}
+
+type ColumnResponse struct {
+	Name          string `json:"name"`
+	Type          string `json:"type"`
+	Required      bool   `json:"required"`
+	PrimaryKey    bool   `json:"primaryKey"`
+	AutoIncrement bool   `json:"autoIncrement"`
+}
+
+func toColumnResponse(c table.Column) ColumnResponse {
+	return ColumnResponse{
+		Name:          c.Name,
+		Type:          string(c.Type),
+		Required:      c.Required,
+		PrimaryKey:    c.PrimaryKey,
+		AutoIncrement: c.AutoIncrement,
+	}
 }
 
 type getRowsHandler struct {
@@ -41,9 +59,9 @@ func (h *getRowsHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		rows = []table.Row{}
 	}
 
-	var columns []string
+	var columns []ColumnResponse
 	for _, c := range tbl.Columns {
-		columns = append(columns, c.Name)
+		columns = append(columns, toColumnResponse(c))
 	}
 
 	writeOK(w, GetRowsResponse{

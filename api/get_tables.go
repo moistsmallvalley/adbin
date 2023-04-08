@@ -17,11 +17,6 @@ func NewGetTablesHandler(tables []table.Table) http.Handler {
 }
 
 func (h *getTablesHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	if r.Method != http.MethodGet {
-		writeNotFound(w)
-		return
-	}
-
 	var names []string
 	for _, t := range h.tables {
 		names = append(names, t.Name)

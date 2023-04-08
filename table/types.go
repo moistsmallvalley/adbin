@@ -105,7 +105,7 @@ func (t Type) Parse(s string) (any, error) {
 	case TypeDate:
 		return time.Parse("2006-01-02", s)
 	case TypeDateTime:
-		return time.Parse("2006-01-02T15:04:05", s)
+		return time.Parse(time.RFC3339, s)
 	case TypeTimestamp:
 		return strconv.ParseFloat(s, 64)
 	case TypeTime:
