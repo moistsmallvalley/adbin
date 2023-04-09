@@ -1,4 +1,4 @@
-import { ReactNode } from "react";
+import React from "react";
 import { createBrowserRouter, generatePath } from "react-router-dom";
 import App from "./App";
 import { NewRowForm } from "./NewRowForm";

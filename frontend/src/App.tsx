@@ -1,11 +1,7 @@
-import { Box, Divider, Stack } from "@mui/material";
-import { Container } from "@mui/system";
-import { useState } from "react";
+import React from "react";
+import { Divider, Stack } from "@mui/material";
 import { Outlet } from "react-router-dom";
-import reactLogo from "./assets/react.svg";
 import { Tables } from "./Tables";
-import { TableView } from "./TableView";
-import viteLogo from "/vite.svg";
 
 function App() {
   return (

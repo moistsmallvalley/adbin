@@ -1,4 +1,4 @@
-import { Column, Row } from "./payloads";
+import { Column } from "./payloads";
 
 export function parseColumnValue(col: Column, s: string): string | number {
   if (isIntColumn(col)) {

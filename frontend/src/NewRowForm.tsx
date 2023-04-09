@@ -1,34 +1,11 @@
-import {
-  Button,
-  Container,
-  FormControl,
-  FormControlLabel,
-  FormLabel,
-  Grid,
-  Input,
-  InputLabel,
-  Stack,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableRow,
-  TextField,
-} from "@mui/material";
-import { Box } from "@mui/system";
+import React, { useState } from "react";
+import { Button, Grid, Stack, TextField } from "@mui/material";
 import { skipToken } from "@reduxjs/toolkit/dist/query";
-import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { AutoCloseSnackbar } from "./components/AutoCloseSnackbar";
-import { Column, Row } from "./services/payloads";
+import { Row } from "./services/payloads";
 import { parseColumnValue } from "./services/row";
-import {
-  useGetRowQuery,
-  useGetRowsQuery,
-  useGetTableQuery,
-  usePatchRowMutation,
-  usePostRowMutation,
-} from "./services/tables";
+import { useGetTableQuery, usePostRowMutation } from "./services/tables";
 
 export function NewRowForm() {
   const { tableName } = useParams();

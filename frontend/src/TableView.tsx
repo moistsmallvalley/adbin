@@ -1,18 +1,17 @@
+import React from "react";
 import {
-  Paper,
   TableContainer,
   Table,
   TableHead,
   TableRow,
   TableCell,
   TableBody,
-  Box,
   Grid,
   Button,
   Stack,
 } from "@mui/material";
 import { skipToken } from "@reduxjs/toolkit/dist/query";
-import { Link, NavLink, useParams } from "react-router-dom";
+import { NavLink, useParams } from "react-router-dom";
 import { useGetRowsQuery } from "./services/tables";
 import EditIcon from "@mui/icons-material/Edit";
 import { Column, Row } from "./services/payloads";
