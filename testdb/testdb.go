@@ -12,6 +12,7 @@ import (
 func InitTestDB(user, pass, dbname string, ddls ...string) (db *sql.DB, err error) {
 	conf := mysql.NewConfig()
 	conf.Net = "tcp"
+	conf.Addr = "127.0.0.1:3306"
 	conf.User = user
 	conf.Passwd = pass
 	conf.ParseTime = true
