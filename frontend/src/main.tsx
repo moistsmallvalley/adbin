@@ -12,12 +12,16 @@ import { TableView } from "./TableView";
 import { RowForm } from "./RowForm";
 import { CssBaseline } from "@mui/material";
 import { router } from "./route";
+import { ThemeProvider } from "@emotion/react";
+import { theme } from "./theme";
 
 ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
   <React.StrictMode>
     <Provider store={store}>
       <CssBaseline />
-      <RouterProvider router={router} />
+      <ThemeProvider theme={theme}>
+        <RouterProvider router={router} />
+      </ThemeProvider>
     </Provider>
   </React.StrictMode>
 );

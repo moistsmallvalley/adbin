@@ -14,6 +14,8 @@ const apiHost = import.meta.env.API_HOST ?? "http://localhost:8080";
 
 export const tablesApi = createApi({
   reducerPath: "tablesApi",
+  refetchOnMountOrArgChange: true,
+  keepUnusedDataFor: 0,
   baseQuery: fetchBaseQuery({ baseUrl: apiHost + "/api/" }),
   endpoints: (builder) => ({
     getTables: builder.query<string[], void>({

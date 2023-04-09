@@ -1,4 +1,5 @@
 import {
+  Alert,
   Button,
   Container,
   FormControl,
@@ -7,6 +8,7 @@ import {
   Grid,
   Input,
   InputLabel,
+  Snackbar,
   Stack,
   Table,
   TableBody,
@@ -17,8 +19,9 @@ import {
 } from "@mui/material";
 import { Box } from "@mui/system";
 import { skipToken } from "@reduxjs/toolkit/dist/query";
-import { useEffect, useState } from "react";
+import { FormEventHandler, useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
+import { AutoCloseSnackbar } from "./components/AutoCloseSnackbar";
 import { Column, Row } from "./services/payloads";
 import { parseColumnValue } from "./services/row";
 import {
@@ -32,14 +35,17 @@ export function RowForm() {
   const { data, error, isLoading } = useGetRowQuery(
     tableName && keys ? { tableName, primaryKeys: keys.split("/") } : skipToken
   );
-  const [patchRow, { isLoading: isPatching }] = usePatchRowMutation();
+  const [patchRow, { isLoading: isSaving, isSuccess, isError }] =
+    usePatchRowMutation();
   const [patchData, setPatchData] = useState<Row>({});
+  const [allowsSnackbar, setAllowsSnackbar] = useState(false);
 
   useEffect(() => {
     setPatchData(data ? structuredClone(data.row) : {});
   }, [data]);
 
-  const save = () => {
+  const save: FormEventHandler = (e) => {
+    e.preventDefault();
     if (!tableName || !keys) {
       return;
     }
@@ -48,6 +54,7 @@ export function RowForm() {
       primaryKeys: keys.split("/"),
       row: patchData,
     });
+    setAllowsSnackbar(true);
   };
 
   return error ? (
@@ -55,7 +62,7 @@ export function RowForm() {
   ) : isLoading ? (
     <>Loading...</>
   ) : data ? (
-    <Stack width={500}>
+    <Stack component="form" width={500} onSubmit={save}>
       {data.columns.map((c) => (
         <TextField
           key={c.name}
@@ -73,9 +80,14 @@ export function RowForm() {
         />
       ))}
       <Grid container sx={{ my: 2 }} justifyContent="flex-end">
-        <Button variant="contained" onClick={save}>
+        <Button variant="contained" type="submit" disabled={isSaving}>
           Save
         </Button>
+        <AutoCloseSnackbar
+          openTrigger={!isSaving && (isSuccess || isError)}
+          message={isSuccess ? "Saved!" : "Error!"}
+          severity={isSuccess ? "success" : "error"}
+        />
       </Grid>
     </Stack>
   ) : null;

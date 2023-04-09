@@ -19,6 +19,7 @@ import { Box } from "@mui/system";
 import { skipToken } from "@reduxjs/toolkit/dist/query";
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
+import { AutoCloseSnackbar } from "./components/AutoCloseSnackbar";
 import { Column, Row } from "./services/payloads";
 import { parseColumnValue } from "./services/row";
 import {
@@ -34,7 +35,8 @@ export function NewRowForm() {
   const { data, error, isLoading } = useGetTableQuery(
     tableName ? { tableName } : skipToken
   );
-  const [postRow, { isLoading: isPosting }] = usePostRowMutation();
+  const [postRow, { isLoading: isSaving, isSuccess, isError }] =
+    usePostRowMutation();
   const [postData, setPostData] = useState<Row>({});
 
   const create = () => {
@@ -69,9 +71,14 @@ export function NewRowForm() {
         />
       ))}
       <Grid container sx={{ my: 2 }} justifyContent="flex-end">
-        <Button variant="contained" onClick={create}>
+        <Button variant="contained" onClick={create} disabled={isSaving}>
           Create
         </Button>
+        <AutoCloseSnackbar
+          openTrigger={!isSaving && (isSuccess || isError)}
+          message={isSuccess ? "Saved!" : "Error!"}
+          severity={isSuccess ? "success" : "error"}
+        />
       </Grid>
     </Stack>
   ) : null;
