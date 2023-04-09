@@ -79,6 +79,7 @@ jobs:
           key: package-lock-{{ checksum "frontend/package-lock.json" }}
           paths:
             - "frontend/node_modules"
+            - "~/.npm"
       - run:
           name: Build
           command: cd frontend && npm run build
